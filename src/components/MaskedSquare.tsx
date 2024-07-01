@@ -11,7 +11,6 @@ export const MaskedSquare = ({ size = 100, masks = [], onUpdate }) => {
     <svg
       width={size}
       height={size}
-      style={{ border: "1px solid black" }}
     >
       <defs>
         <mask id="combinedMask">
@@ -87,7 +86,7 @@ const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate }) => {
       points={points}
       fill="transparent"
       stroke="black"
-      strokeWidth="1"
+      strokeWidth="0"
       style={{ cursor: "grab" }}
       onMouseDown={handleMouseDown}
     />
@@ -143,8 +142,8 @@ const DraggablePoint = ({
     <circle
       cx={x}
       cy={y}
-      r="5"
-      fill="red"
+      r="15"
+      fill="gray"
       onMouseDown={handleMouseDown}
       style={{ cursor: "pointer" }}
     />

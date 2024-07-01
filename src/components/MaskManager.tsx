@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import { MaskedSquare } from "./MaskedSquare";
 import { ColorWheel } from "./ColorWheel";
+import { Button } from "./ui/button";
+import { Slider } from "./ui/slider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export const MaskManager = () => {
   const [masks, setMasks] = useState([]);
+  const [rotation, setRotation] = useState(0);
+  const [size, setSize] = useState(400);
   const [selectedMaskIndex, setSelectedMaskIndex] = useState(null);
 
   const addPresetMask = (newMask) => {
@@ -65,27 +77,52 @@ export const MaskManager = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <div style={{ flex: 2 }}>
+    <div className="flex flex-col w-full items-center">
+      <div style={{ flex: 1, maxWidth: `${size}px` }}>
         <h1>SVG Mask Editor</h1>
-        <div style={{ position: "relative" }}>
-          <ColorWheel diameter={400} />
+        <div style={{ position: "relative" }} className="m-auto">
+          <ColorWheel diameter={size} rotation={rotation} />
           <div style={{ position: "absolute", left: 0, top: 0 }}>
             <MaskedSquare
-              size={400}
+              size={size}
               masks={masks}
               onUpdate={(newMasks) => setMasks(newMasks)}
             />
           </div>
         </div>
-        {Object.keys(presets).map((presetName) => (
-          <button
+        <div className="p-10">
+          <Slider
+            defaultValue={[rotation]}
+            max={1}
+            step={0.002}
+            onValueChange={(v) => setRotation(v[0])}
+          />
+        </div>
+        {/* {Object.keys(presets).map((presetName) => (
+          <Button
             key={presetName}
             onClick={() => addPresetMask(presets[presetName])}
           >
             {presetName}
-          </button>
-        ))}
+          </Button>
+        ))} */}
+{/*  add  */}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button>+ Add mask</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
+            {Object.keys(presets).map((presetName) => (
+              <DropdownMenuItem key={presetName} onClick={() => addPresetMask(presets[presetName])}>
+                {presetName}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+
       </div>
       <div style={{ flex: 1 }}>
         <h2>Mask Management</h2>

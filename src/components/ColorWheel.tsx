@@ -1,6 +1,6 @@
 import React from "react";
 
-export const ColorWheel = ({lightness = 50, diameter = 200}) => {
+export const ColorWheel = ({lightness = 50, diameter = 200, rotation = 0}) => {
   const colors = [
     0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330  // 各色のH (色相角) 値
 ];
@@ -22,6 +22,7 @@ return (
         width={diameter} 
         height={diameter}
         xmlns="http://www.w3.org/2000/svg"
+        className="bg-white"
     >
         {Array.from({ length: segments }, (_, i) => {
             const innerRadius = radius * (i / segments) - overlapFactor;
@@ -30,8 +31,8 @@ return (
 
             return colors.map((hue, index) => {
                 // 開始角度と終了角度にオーバーラップ因子を考慮する
-                const startAngle = ((index / colors.length) * 360) - angleOverlapFactor;
-                const endAngle = (((index + 1) / colors.length) * 360) + angleOverlapFactor;
+                const startAngle = ((index / colors.length) * 360) + (rotation * 360) - angleOverlapFactor;
+                const endAngle = (((index + 1) / colors.length) * 360) + (rotation * 360) + angleOverlapFactor;
                 const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
                 // 外側円の開始点と終了点の計算
