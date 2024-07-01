@@ -1,30 +1,41 @@
 import React, { useState } from "react";
 
-const ItemTypes = {
-  MASK: "mask",
-  POINT: "point",
-};
-
-export const MaskedSquare = ({ size = 100, masks = [], onUpdate }) => {
-
+export const MaskedSquare = ({
+  size = 100,
+  masks = [],
+  onUpdate,
+  onSelect,
+  selectedMaskIndex,
+}: {
+  size: number;
+  masks: [number, number][][];
+  onUpdate: (masks: [number, number][][]) => void;
+  onSelect: (index: number) => void;
+  selectedMaskIndex: number | null;
+}) => {
   return (
-    <svg
-      width={size}
-      height={size}
-    >
+    <svg width={size} height={size}>
       <defs>
         <mask id="combinedMask">
           <rect width="100%" height="100%" fill="white" />
           {masks.map((mask, index) => (
             <polygon
               key={index}
-              points={mask.map(point => `${point[0] * size},${point[1] * size}`).join(' ')}
+              points={mask
+                .map((point) => `${point[0] * size},${point[1] * size}`)
+                .join(" ")}
               fill="black"
             />
           ))}
         </mask>
       </defs>
-      <rect width={size} height={size} fill="white" opacity="0.8" mask="url(#combinedMask)" />
+      <rect
+        width={size}
+        height={size}
+        fill="white"
+        opacity="0.8"
+        mask="url(#combinedMask)"
+      />
       {masks.map((mask, index) => (
         <DraggablePolygon
           key={index}
@@ -33,30 +44,44 @@ export const MaskedSquare = ({ size = 100, masks = [], onUpdate }) => {
           size={size}
           mask={mask}
           onUpdate={onUpdate}
+          isSelected={index === selectedMaskIndex}
+          onSelect={onSelect}
         />
       ))}
-      {masks.map((mask, maskIndex) =>
-        mask.map((point, pointIndex) => (
-          <DraggablePoint
-            key={`${maskIndex}-${pointIndex}`}
-            masks={masks}
-            maskIndex={maskIndex}
-            pointIndex={pointIndex}
-            point={point}
-            size={size}
-            onUpdate={onUpdate}
-          />
-        ))
+      {masks.map(
+        (mask, maskIndex) =>
+          maskIndex === selectedMaskIndex &&
+          mask.map((point, pointIndex) => (
+            <DraggablePoint
+              key={`${maskIndex}-${pointIndex}`}
+              masks={masks}
+              maskIndex={maskIndex}
+              pointIndex={pointIndex}
+              point={point}
+              size={size}
+              onUpdate={onUpdate}
+            />
+          ))
       )}
     </svg>
   );
 };
 
-const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate }) => {
+const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate, onSelect, isSelected: isSelect }: {
+  masks: [number, number][][];
+  maskIndex: number;
+  size: number;
+  mask: [number, number][];
+  onUpdate: (masks: [number, number][][]) => void;
+  onSelect: (index: number) => void;
+  isSelected: boolean;
+}) => {
   const points = mask.map(([x, y]) => `${x * size},${y * size}`).join(" ");
 
   const handleMouseDown = (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    onSelect(maskIndex);
     const startX = e.clientX;
     const startY = e.clientY;
     const startPoints = points;
@@ -89,6 +114,7 @@ const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate }) => {
       strokeWidth="0"
       style={{ cursor: "grab" }}
       onMouseDown={handleMouseDown}
+      onClick={(e) => e.stopPropagation()}
     />
   );
 };
@@ -146,6 +172,7 @@ const DraggablePoint = ({
       fill="gray"
       onMouseDown={handleMouseDown}
       style={{ cursor: "pointer" }}
+      onClick={e => e.stopPropagation()}
     />
   );
 };

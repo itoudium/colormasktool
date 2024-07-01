@@ -10,56 +10,44 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+
+type MaskType = [number, number][];
 
 export const MaskManager = () => {
-  const [masks, setMasks] = useState([]);
+  const [masks, setMasks] = useState<MaskType[]>([]);
   const [rotation, setRotation] = useState(0);
   const [size, setSize] = useState(400);
-  const [selectedMaskIndex, setSelectedMaskIndex] = useState(null);
+  const [selectedMaskIndex, setSelectedMaskIndex] = useState<number | null>(
+    null
+  );
 
-  const addPresetMask = (newMask) => {
+  const addPresetMask = (newMask: MaskType) => {
     setMasks([...masks, newMask]);
+    setSelectedMaskIndex(masks.length);
   };
 
   const presets = {
-    "正三角形 大": [
-      [0.5, 0.1],
-      [0.1, 0.9],
-      [0.9, 0.9],
+    "▲": [
+      [0.5, 0.0],
+      [0.125, 0.5],
+      [0.875, 0.5],
     ],
-    "正三角形 中": [
+    "◣": [
+      [0.32, 0.18],
+      [0.32, 0.83],
+      [0.68, 0.83],
+    ],
+    "◢": [
+      [0.1, 0.5],
+      [0.5, 0.5],
+      [0.5, 0.0],
+    ],
+    "♦": [
       [0.5, 0.2],
-      [0.3, 0.7],
-      [0.7, 0.7],
-    ],
-    "正三角形 小": [
-      [0.5, 0.4],
-      [0.4, 0.6],
-      [0.6, 0.6],
-    ],
-    スクエア: [
-      [0.3, 0.3],
-      [0.7, 0.3],
-      [0.7, 0.7],
-      [0.3, 0.7],
-    ],
-    縦に長い長方形: [
-      [0.1, 0.2],
-      [0.3, 0.2],
-      [0.3, 0.8],
-      [0.1, 0.8],
-    ],
-    菱形: [
-      [0.5, 0.1],
-      [0.9, 0.5],
-      [0.5, 0.9],
-      [0.1, 0.5],
-    ],
-    直角二等辺三角形: [
-      [0.1, 0.9],
-      [0.1, 0.5],
-      [0.5, 0.9],
+      [0.65, 0.5],
+      [0.5, 0.8],
+      [0.35, 0.5],
     ],
   };
 
@@ -76,8 +64,16 @@ export const MaskManager = () => {
     setSelectedMaskIndex(null);
   };
 
+  const handleRemove = () => {
+    deleteMask(selectedMaskIndex);
+    setSelectedMaskIndex(null);
+  }
+
   return (
-    <div className="flex flex-col w-full items-center">
+    <div
+      className="flex flex-col w-full items-center"
+      onClick={() => setSelectedMaskIndex(null)}
+    >
       <div style={{ flex: 1, maxWidth: `${size}px` }}>
         <h1>SVG Mask Editor</h1>
         <div style={{ position: "relative" }} className="m-auto">
@@ -87,6 +83,8 @@ export const MaskManager = () => {
               size={size}
               masks={masks}
               onUpdate={(newMasks) => setMasks(newMasks)}
+              onSelect={(index) => setSelectedMaskIndex(index)}
+              selectedMaskIndex={selectedMaskIndex}
             />
           </div>
         </div>
@@ -98,98 +96,39 @@ export const MaskManager = () => {
             onValueChange={(v) => setRotation(v[0])}
           />
         </div>
-        {/* {Object.keys(presets).map((presetName) => (
-          <Button
-            key={presetName}
-            onClick={() => addPresetMask(presets[presetName])}
-          >
-            {presetName}
-          </Button>
-        ))} */}
-{/*  add  */}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button>+ Add mask</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
-            {Object.keys(presets).map((presetName) => (
-              <DropdownMenuItem key={presetName} onClick={() => addPresetMask(presets[presetName])}>
-                {presetName}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-
-      </div>
-      <div style={{ flex: 1 }}>
-        <h2>Mask Management</h2>
-        <ul>
-          {masks.map((_, index) => (
-            <li key={index}>
-              <button onClick={() => setSelectedMaskIndex(index)}>
-                Edit Mask {index + 1}
-              </button>
-              <button onClick={() => deleteMask(index)}>
-                Delete Mask {index + 1}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {selectedMaskIndex !== null && (
-        <div style={{ flex: 1 }}>
-          <h2>Edit Mask {selectedMaskIndex + 1}</h2>
-          <ul>
-            {masks[selectedMaskIndex].map((point, pointIndex) => (
-              <li key={pointIndex}>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={point[0]}
-                  onChange={(e) => {
-                    const newPoint = [parseFloat(e.target.value), point[1]];
-                    const newPoints = masks[selectedMaskIndex].slice();
-                    newPoints[pointIndex] = newPoint;
-                    updateMask(selectedMaskIndex, newPoints);
-                  }}
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  value={point[1]}
-                  onChange={(e) => {
-                    const newPoint = [point[0], parseFloat(e.target.value)];
-                    const newPoints = masks[selectedMaskIndex].slice();
-                    newPoints[pointIndex] = newPoint;
-                    updateMask(selectedMaskIndex, newPoints);
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    const newPoints = masks[selectedMaskIndex].slice();
-                    newPoints.splice(pointIndex, 1);
-                    updateMask(selectedMaskIndex, newPoints);
-                  }}
+        <div className="flex justify-between">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button>+ Add mask</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
+              {Object.keys(presets).map((presetName) => (
+                <DropdownMenuItem
+                  key={presetName}
+                  onClick={() => addPresetMask(presets[presetName])}
                 >
-                  Remove Point
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={() => {
-              const newPoints = masks[selectedMaskIndex].slice();
-              newPoints.push([0.5, 0.5]); // デフォルト位置でポイント追加
-              updateMask(selectedMaskIndex, newPoints);
-            }}
-          >
-            Add Point
-          </button>
+                  {presetName}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {selectedMaskIndex != null && (
+            <Button onClick={handleRemove}>- Remove</Button>
+          )}
         </div>
-      )}
+      </div>
+
+      <div className="flex flex-col">
+        <h1>inspect</h1>
+        {masks.map((mask, index) => (
+          <div key={index}>
+            <pre>{JSON.stringify(mask)}</pre>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
