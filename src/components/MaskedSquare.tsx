@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import type { MouseEvent } from "react";
+import { ColorWheel } from "./ColorWheel";
 
 export const MaskedSquare = ({
   size = 100,
   masks = [],
+  rotation = 0,
   onUpdate,
   onSelect,
   selectedMaskIndex,
 }: {
   size: number;
   masks: [number, number][][];
+  rotation: number;
   onUpdate: (masks: [number, number][][]) => void;
   onSelect: (index: number) => void;
   selectedMaskIndex: number | null;
 }) => {
   return (
-    <svg width={size} height={size}>
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      width={size}
+      height={size}
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
         <mask id="combinedMask">
           <rect width="100%" height="100%" fill="white" />
@@ -29,9 +37,11 @@ export const MaskedSquare = ({
           ))}
         </mask>
       </defs>
-      <rect
-        width={size}
-        height={size}
+      <ColorWheel diameter={size} rotation={rotation} />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={size / 2}
         fill="white"
         opacity="0.8"
         mask="url(#combinedMask)"
@@ -67,7 +77,15 @@ export const MaskedSquare = ({
   );
 };
 
-const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate, onSelect, isSelected: isSelect }: {
+const DraggablePolygon = ({
+  masks,
+  maskIndex,
+  size,
+  mask,
+  onUpdate,
+  onSelect,
+  isSelected: isSelect,
+}: {
   masks: [number, number][][];
   maskIndex: number;
   size: number;
@@ -78,7 +96,7 @@ const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate, onSelect, is
 }) => {
   const points = mask.map(([x, y]) => `${x * size},${y * size}`).join(" ");
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onSelect(maskIndex);
@@ -86,13 +104,15 @@ const DraggablePolygon = ({ masks, maskIndex, size, mask, onUpdate, onSelect, is
     const startY = e.clientY;
     const startPoints = points;
 
-    const handleMouseMove = (moveEvent) => {
+    const handleMouseMove = (moveEvent: any) => {
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
 
       const updated = masks.map((mask, index) => {
         if (index !== maskIndex) return mask;
-        return mask.map(([x, y]) => [x + dx / size, y + dy / size]);
+        return mask.map(
+          ([x, y]) => [x + dx / size, y + dy / size] as [number, number]
+        );
       });
       onUpdate(updated);
     };
@@ -126,18 +146,25 @@ const DraggablePoint = ({
   point,
   size,
   onUpdate,
+}: {
+  masks: [number, number][][];
+  maskIndex: number;
+  pointIndex: number;
+  point: [number, number];
+  size: number;
+  onUpdate: (masks: [number, number][][]) => void;
 }) => {
   const x = point[0] * size;
   const y = point[1] * size;
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: MouseEvent) => {
     e.stopPropagation();
     const startX = e.clientX;
     const startY = e.clientY;
     const initialX = x;
     const initialY = y;
 
-    const handleMouseMove = (moveEvent) => {
+    const handleMouseMove = (moveEvent: any) => {
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
 
@@ -148,7 +175,7 @@ const DraggablePoint = ({
         if (index !== maskIndex) return mask;
         return mask.map((p, index) => {
           if (index !== pointIndex) return p;
-          return [updatedX / size, updatedY / size];
+          return [updatedX / size, updatedY / size] as [number, number];
         });
       });
 
@@ -172,7 +199,7 @@ const DraggablePoint = ({
       fill="gray"
       onMouseDown={handleMouseDown}
       style={{ cursor: "pointer" }}
-      onClick={e => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     />
   );
 };

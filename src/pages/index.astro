@@ -1,6 +1,8 @@
 ---
 import '@/styles/global.css';
 import { MaskManager } from "../components/MaskManager";
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
 ---
 
 <html lang="en">
@@ -12,7 +14,8 @@ import { MaskManager } from "../components/MaskManager";
     <title>Color mask tool</title>
   </head>
   <body>
-    <h1>Color mask tool</h1>
+    <Header />
     <MaskManager client:only="react" />
+		<Footer />
   </body>
 </html>

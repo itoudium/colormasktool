@@ -1,5 +1,3 @@
-import React from "react";
-
 export const ColorWheel = ({lightness = 50, diameter = 200, rotation = 0}) => {
   const colors = [
     0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330  // 各色のH (色相角) 値
@@ -12,7 +10,7 @@ const overlapFactor = 0.5; // 内外半径間のオーバーラップ因子
 const angleOverlapFactor = 1; // 角度のオーバーラップ因子（必要に応じて調整）
 
 // ヘルパー関数: HSLカラーを取得
-const getColorHSL = (hue, saturation, lightness) => {
+const getColorHSL = (hue: number, saturation: number, lightness: number) => {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 

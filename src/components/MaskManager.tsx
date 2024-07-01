@@ -22,12 +22,15 @@ export const MaskManager = () => {
     null
   );
 
+  // debug logging masks
+  console.debug(masks);
+
   const addPresetMask = (newMask: MaskType) => {
     setMasks([...masks, newMask]);
     setSelectedMaskIndex(masks.length);
   };
 
-  const presets = {
+  const presets: Record<string, MaskType> = {
     "▲": [
       [0.5, 0.0],
       [0.125, 0.5],
@@ -51,13 +54,7 @@ export const MaskManager = () => {
     ],
   };
 
-  const updateMask = (index, newPoints) => {
-    const updatedMasks = masks.slice();
-    updatedMasks[index] = newPoints;
-    setMasks(updatedMasks);
-  };
-
-  const deleteMask = (index) => {
+  const deleteMask = (index: number) => {
     const updatedMasks = masks.slice();
     updatedMasks.splice(index, 1);
     setMasks(updatedMasks);
@@ -65,28 +62,25 @@ export const MaskManager = () => {
   };
 
   const handleRemove = () => {
-    deleteMask(selectedMaskIndex);
+    if (selectedMaskIndex != null) deleteMask(selectedMaskIndex);
     setSelectedMaskIndex(null);
-  }
+  };
 
   return (
     <div
-      className="flex flex-col w-full items-center"
+      className="flex flex-col w-full items-center mt-10"
       onClick={() => setSelectedMaskIndex(null)}
     >
       <div style={{ flex: 1, maxWidth: `${size}px` }}>
-        <h1>SVG Mask Editor</h1>
         <div style={{ position: "relative" }} className="m-auto">
-          <ColorWheel diameter={size} rotation={rotation} />
-          <div style={{ position: "absolute", left: 0, top: 0 }}>
-            <MaskedSquare
-              size={size}
-              masks={masks}
-              onUpdate={(newMasks) => setMasks(newMasks)}
-              onSelect={(index) => setSelectedMaskIndex(index)}
-              selectedMaskIndex={selectedMaskIndex}
-            />
-          </div>
+          <MaskedSquare
+            size={size}
+            masks={masks}
+            onUpdate={(newMasks) => setMasks(newMasks)}
+            onSelect={(index) => setSelectedMaskIndex(index)}
+            selectedMaskIndex={selectedMaskIndex}
+            rotation={rotation}
+          />
         </div>
         <div className="p-10">
           <Slider
@@ -119,15 +113,6 @@ export const MaskManager = () => {
             <Button onClick={handleRemove}>- Remove</Button>
           )}
         </div>
-      </div>
-
-      <div className="flex flex-col">
-        <h1>inspect</h1>
-        {masks.map((mask, index) => (
-          <div key={index}>
-            <pre>{JSON.stringify(mask)}</pre>
-          </div>
-        ))}
       </div>
     </div>
   );
