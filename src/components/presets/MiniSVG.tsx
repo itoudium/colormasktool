@@ -47,6 +47,7 @@ export function ColorWheel({
   size: number;
   rotation: number;
 }) {
+  const rotationBase = -15;
   const lightness = 50;
   const colors = [
     0,
@@ -84,8 +85,12 @@ export function ColorWheel({
         return colors.map((hue, index) => {
           // 開始角度と終了角度にオーバーラップ因子を考慮する
           const startAngle =
-            (index / colors.length) * 360 + rotation * 360 - angleOverlapFactor;
+            rotationBase +
+            (index / colors.length) * 360 +
+            rotation * 360 -
+            angleOverlapFactor;
           const endAngle =
+            rotationBase +
             ((index + 1) / colors.length) * 360 +
             rotation * 360 +
             angleOverlapFactor;

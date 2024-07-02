@@ -11,10 +11,16 @@ import Footer from '@/components/Footer.astro';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="keywords" content="art,color wheel,Gamut Mask,color picker,color preset manager,イラスト,アート,色,配色"/>
     <title>Color mask tool</title>
   </head>
   <body>
     <Header />
+    <noscript>
+      <div class="bg-red-100 text-red-900 p-4 text-center">
+        This site requires JavaScript to function properly.
+      </div>
+    </noscript>
     <MaskManager client:only="react" />
 		<Footer />
   </body>

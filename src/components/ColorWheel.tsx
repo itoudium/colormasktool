@@ -2,6 +2,7 @@ export const ColorWheel = ({lightness = 50, diameter = 200, rotation = 0}) => {
   const colors = [
     0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330  // 各色のH (色相角) 値
 ];
+const rotationBase = -15;
 const segments = 10;
 const radius = diameter / 2;
 const centerX = radius;
@@ -23,8 +24,8 @@ return (
 
             return colors.map((hue, index) => {
                 // 開始角度と終了角度にオーバーラップ因子を考慮する
-                const startAngle = ((index / colors.length) * 360) + (rotation * 360) - angleOverlapFactor;
-                const endAngle = (((index + 1) / colors.length) * 360) + (rotation * 360) + angleOverlapFactor;
+                const startAngle = rotationBase + ((index / colors.length) * 360) + (rotation * 360) - angleOverlapFactor;
+                const endAngle = rotationBase + (((index + 1) / colors.length) * 360) + (rotation * 360) + angleOverlapFactor;
                 const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
                 // 外側円の開始点と終了点の計算
