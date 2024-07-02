@@ -15,13 +15,7 @@ const getColorHSL = (hue: number, saturation: number, lightness: number) => {
 }
 
 return (
-    <svg 
-        viewBox={`0 0 ${diameter} ${diameter}`} 
-        width={diameter} 
-        height={diameter}
-        xmlns="http://www.w3.org/2000/svg"
-        className="bg-white"
-    >
+    <g>
         {Array.from({ length: segments }, (_, i) => {
             const innerRadius = radius * (i / segments) - overlapFactor;
             const outerRadius = radius * ((i + 1) / segments) + overlapFactor;
@@ -58,6 +52,6 @@ return (
         })}
         {/* 中心部にグレーの円を描画 */}
         <circle cx={centerX} cy={centerY} r={radius / segments} fill={`hsl(0, 0%, ${lightness}%)`} />
-    </svg>
+    </g>
 );
 };

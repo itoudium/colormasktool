@@ -96,17 +96,17 @@ const DraggablePolygon = ({
 }) => {
   const points = mask.map(([x, y]) => `${x * size},${y * size}`).join(" ");
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onSelect(maskIndex);
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startPoints = points;
+    const { x: startX, y: startY } = getEventPosition(e);
 
     const handleMouseMove = (moveEvent: any) => {
-      const dx = moveEvent.clientX - startX;
-      const dy = moveEvent.clientY - startY;
+      moveEvent.preventDefault();
+      const { x: currentX, y: currentY } = getEventPosition(moveEvent);
+      const dx = currentX - startX;
+      const dy = currentY - startY;
 
       const updated = masks.map((mask, index) => {
         if (index !== maskIndex) return mask;
@@ -120,10 +120,14 @@ const DraggablePolygon = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleMouseMove);
+      document.removeEventListener("touchend", handleMouseUp);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchmove", handleMouseMove);
+    document.addEventListener("touchend", handleMouseUp);
   };
 
   return (
@@ -134,10 +138,20 @@ const DraggablePolygon = ({
       strokeWidth="0"
       style={{ cursor: "grab" }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleMouseDown}
       onClick={(e) => e.stopPropagation()}
     />
   );
 };
+
+function getEventPosition(event: MouseEvent | React.TouchEvent) {
+  if (event.type.startsWith('touch')) {
+      const touch = (event as React.TouchEvent).touches[0] || (event as React.TouchEvent).changedTouches[0];
+      return { x: touch.clientX, y: touch.clientY };
+  } else {
+      return { x: (event as MouseEvent).clientX, y: (event as MouseEvent).clientY };
+  }
+}
 
 const DraggablePoint = ({
   masks,
@@ -157,16 +171,17 @@ const DraggablePoint = ({
   const x = point[0] * size;
   const y = point[1] * size;
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
-    const startX = e.clientX;
-    const startY = e.clientY;
+    e.preventDefault();
+    const { x: startX, y: startY } = getEventPosition(e);
     const initialX = x;
     const initialY = y;
 
     const handleMouseMove = (moveEvent: any) => {
-      const dx = moveEvent.clientX - startX;
-      const dy = moveEvent.clientY - startY;
+      const { x: currentX, y: currentY } = getEventPosition(moveEvent);
+      const dx = currentX - startX;
+      const dy = currentY - startY;
 
       const updatedX = initialX + dx;
       const updatedY = initialY + dy;
@@ -185,10 +200,14 @@ const DraggablePoint = ({
     const handleMouseUp = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleMouseMove);
+      document.removeEventListener("touchend", handleMouseUp);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchmove", handleMouseMove);
+    document.addEventListener("touchend", handleMouseUp);
   };
 
   return (
@@ -198,6 +217,7 @@ const DraggablePoint = ({
       r="15"
       fill="gray"
       onMouseDown={handleMouseDown}
+      onTouchStart={handleMouseDown}
       style={{ cursor: "pointer" }}
       onClick={(e) => e.stopPropagation()}
     />

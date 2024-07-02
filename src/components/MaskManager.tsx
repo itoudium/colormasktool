@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MaskedSquare } from "./MaskedSquare";
 import { ColorWheel } from "./ColorWheel";
 import { Button } from "./ui/button";
@@ -11,26 +11,52 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PresetManager, usePreset } from "./presets";
 
 type MaskType = [number, number][];
 
 export const MaskManager = () => {
+  const presetHook = usePreset();
   const [masks, setMasks] = useState<MaskType[]>([]);
   const [rotation, setRotation] = useState(0);
-  const [size, setSize] = useState(400);
+  const [size, setSize] = useState(380);
   const [selectedMaskIndex, setSelectedMaskIndex] = useState<number | null>(
     null
   );
+  const [presetLoaded, setPresetLoaded] = useState(false);  
 
   // debug logging masks
   console.debug(masks);
 
-  const addPresetMask = (newMask: MaskType) => {
+  // handle change selected preset
+  useEffect(() => {
+    if (presetHook.selectedPresetIndex !== null) {
+      setMasks([...presetHook.presets[presetHook.selectedPresetIndex].masks]);
+      setRotation(presetHook.presets[presetHook.selectedPresetIndex].rotation);
+      setPresetLoaded(true);
+    } else {
+      setMasks([]);
+      setRotation(0);
+      setPresetLoaded(true);
+    }
+  }, [presetHook.selectedPresetIndex]);
+
+  // handle dirty state
+  useEffect(() => {
+    if (presetLoaded) {
+      setPresetLoaded(false);
+      presetHook.setIsDirty(false);
+    } else {
+      presetHook.setIsDirty(true);
+    }
+  }, [masks, rotation]);
+
+  const addTemplateMask = (newMask: MaskType) => {
     setMasks([...masks, newMask]);
     setSelectedMaskIndex(masks.length);
   };
 
-  const presets: Record<string, MaskType> = {
+  const templates: Record<string, MaskType> = {
     "▲": [
       [0.5, 0.0],
       [0.125, 0.5],
@@ -72,7 +98,8 @@ export const MaskManager = () => {
       onClick={() => setSelectedMaskIndex(null)}
     >
       <div style={{ flex: 1, maxWidth: `${size}px` }}>
-        <div style={{ position: "relative" }} className="m-auto">
+        <PresetManager presetHook={presetHook} masks={masks} rotation={rotation} />
+        <div className="relative mx-auto mt-10">
           <MaskedSquare
             size={size}
             masks={masks}
@@ -98,12 +125,12 @@ export const MaskManager = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
-              {Object.keys(presets).map((presetName) => (
+              {Object.keys(templates).map((templateName) => (
                 <DropdownMenuItem
-                  key={presetName}
-                  onClick={() => addPresetMask(presets[presetName])}
+                  key={templateName}
+                  onClick={() => addTemplateMask(templates[templateName])}
                 >
-                  {presetName}
+                  {templateName}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
