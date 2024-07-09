@@ -9,9 +9,10 @@ import {
 import React, { useEffect, useState } from "react";
 import { ColorWheel } from "./ColorWheel";
 import { MaskedSquare } from "./MaskedSquare";
-import { PresetManager, usePreset } from "./presets";
-import { Button } from "./ui/button";
-import { Slider } from "./ui/slider";
+import { PresetManager, usePreset } from "../presets";
+import { Button } from "../ui/button";
+import { Slider } from "../ui/slider";
+import { Toaster } from "../ui/toaster";
 
 type MaskType = [number, number][];
 
@@ -145,6 +146,7 @@ export const MaskManager = () => {
 					)}
 				</div>
 			</div>
+			<Toaster />
 		</div>
 	);
 };

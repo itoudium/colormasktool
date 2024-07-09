@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useToast } from "../ui/use-toast";
 
 export type PresetType = {
   name: string;
@@ -13,6 +14,7 @@ export function usePreset() {
     null
   );
   const [isDirty, setIsDirty] = useState(false);
+  const { toast } = useToast()
 
   useEffect(() => {
     // load presets from local storage on first time
@@ -32,6 +34,9 @@ export function usePreset() {
     const updatedPresets = [...presets, newPreset];
     setPresets(updatedPresets);
     localStorage.setItem("presets", JSON.stringify(updatedPresets));
+    toast({
+      title: `${name} created`,
+    })
   }
 
   function 	deletePreset(index: number) {
@@ -39,6 +44,9 @@ export function usePreset() {
     updatedPresets.splice(index, 1);
     setPresets(updatedPresets);
     localStorage.setItem("presets", JSON.stringify(updatedPresets));
+    toast({
+      title: "Preset deleted",
+    })
   }
 
   function updatePreset(
@@ -56,6 +64,9 @@ export function usePreset() {
     if (typeof name !== "undefined") updatedPresets[index].name = name;
     setPresets(updatedPresets);
     localStorage.setItem("presets", JSON.stringify(updatedPresets));
+    toast({
+      title: `${updatedPresets[index].name} updated`,
+    })
   }
 
   return {
