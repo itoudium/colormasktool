@@ -7,6 +7,12 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { PresetRow } from "./PresetRow";
 import type { usePreset } from "./usePreset";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function PresetManager({
   presetHook,
@@ -44,36 +50,48 @@ export function PresetManager({
   }
 
   return (
-    <>
+    <TooltipProvider>
       <div className="flex">
-        <Button
-          className="grow flex items-center justify-between mr-2"
-          onClick={() => setIsOpen(!isOpen)}
-          variant="outline"
-        >
-          <span>
-            {currentPresetName}
-            {presetHook.isDirty && " *"}
-          </span>
-          <span>▾</span>
-        </Button>
-        <Button variant="outline" onClick={handleSave}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-        </Button>
+        <Tooltip>
+          <Button
+            className="grow mr-2 flex"
+            onClick={() => setIsOpen(!isOpen)}
+            variant="outline"
+            >
+              <TooltipTrigger>
+                <div className="flex items-center justify-between ">
+                  <span>
+                    {currentPresetName}
+                    {presetHook.isDirty && " *"}
+                  </span>
+                  <span>▾</span>
+                </div>
+              </TooltipTrigger>
+            </Button>
+          <TooltipContent><p>Select preset</p></TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button variant="outline" onClick={handleSave}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent><p>Save as preset</p></TooltipContent>
+        </Tooltip>
       </div>
       <div className="relative">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -115,6 +133,6 @@ export function PresetManager({
           </CollapsibleContent>
         </Collapsible>
       </div>
-    </>
+    </TooltipProvider>
   );
 }
