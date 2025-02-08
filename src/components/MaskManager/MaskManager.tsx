@@ -13,6 +13,7 @@ import { PresetManager, usePreset } from "../presets";
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import { Toaster } from "../ui/toaster";
+import { useToast } from "../ui/use-toast";
 
 type MaskType = [number, number][];
 
@@ -92,6 +93,18 @@ export const MaskManager = () => {
 		if (selectedMaskIndex != null) deleteMask(selectedMaskIndex);
 		setSelectedMaskIndex(null);
 	};
+
+	const { toast } = useToast();
+
+	// HOTFIX: toastを一度表示して消さないとボタンが操作できない
+	useEffect(() => {
+		const t = toast({
+			title: "",
+		})
+		setTimeout(()=> {
+			t.dismiss();
+		}, 10);
+	}, []);
 
 	return (
 		<div
