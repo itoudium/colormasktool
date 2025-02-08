@@ -126,7 +126,7 @@ const DraggablePolygon = ({
 
 		document.addEventListener("mousemove", handleMouseMove);
 		document.addEventListener("mouseup", handleMouseUp);
-		document.addEventListener("touchmove", handleMouseMove);
+		document.addEventListener("touchmove", handleMouseMove, {passive: false});
 		document.addEventListener("touchend", handleMouseUp);
 	};
 
