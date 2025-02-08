@@ -20,7 +20,7 @@ export const MaskManager = () => {
 	const presetHook = usePreset();
 	const [masks, setMasks] = useState<MaskType[]>([]);
 	const [rotation, setRotation] = useState(0);
-	const [size, setSize] = useState(380);
+	const [size, setSize] = useState(Math.min(380, window.innerWidth * 0.9));
 	const [selectedMaskIndex, setSelectedMaskIndex] = useState<number | null>(
 		null,
 	);
