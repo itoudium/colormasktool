@@ -184,6 +184,8 @@ const DraggablePoint = ({
 		const initialY = y;
 
 		const handleMouseMove = (moveEvent: any) => {
+			moveEvent.preventDefault();
+			moveEvent.stopPropagation();
 			const { x: currentX, y: currentY } = getEventPosition(moveEvent);
 			const dx = currentX - startX;
 			const dy = currentY - startY;
@@ -211,7 +213,7 @@ const DraggablePoint = ({
 
 		document.addEventListener("mousemove", handleMouseMove);
 		document.addEventListener("mouseup", handleMouseUp);
-		document.addEventListener("touchmove", handleMouseMove);
+		document.addEventListener("touchmove", handleMouseMove, { passive: false });
 		document.addEventListener("touchend", handleMouseUp);
 	};
 
